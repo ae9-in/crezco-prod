@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Exo 2', sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Orbitron', sans-serif;
+  }
+}
+
+@layer utilities {
+  .neon-glow-pink {
+    text-shadow: 0 0 10px #FF2BCD, 0 0 20px #FF2BCD, 0 0 30px #FF2BCD;
+  }
+
+  .neon-glow-blue {
+    text-shadow: 0 0 10px #32F5FF, 0 0 20px #32F5FF, 0 0 30px #32F5FF;
+  }
+
+  .neon-glow-purple {
+    text-shadow: 0 0 10px #8A2FFF, 0 0 20px #8A2FFF, 0 0 30px #8A2FFF;
+  }
+
+  .neon-border-pink {
+    box-shadow: 0 0 20px #FF2BCD, inset 0 0 20px rgba(255, 43, 205, 0.2);
+  }
+
+  .neon-border-blue {
+    box-shadow: 0 0 20px #32F5FF, inset 0 0 20px rgba(50, 245, 255, 0.2);
+  }
+
+  .neon-border-purple {
+    box-shadow: 0 0 20px #8A2FFF, inset 0 0 20px rgba(138, 47, 255, 0.2);
+  }
+
+  .scanline {
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(255, 255, 255, 0.03) 50%,
+      transparent 100%
+    );
+    background-size: 100% 4px;
+    animation: scanline 8s linear infinite;
+  }
+
+  @keyframes scanline {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 100%;
+    }
+  }
+
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .animate-scroll {
+    animation: scroll 20s linear infinite;
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+}

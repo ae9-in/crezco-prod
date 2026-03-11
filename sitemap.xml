@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Homepage -->
+  <url>
+    <loc>https://crezcocommune.in/</loc>
+    <priority>1.00</priority>
+  </url>
+
+  <!-- About Us -->
+  <url>
+    <loc>https://crezcocommune.in/about</loc>
+    <priority>0.80</priority>
+  </url>
+
+  <!-- Services -->
+  <url>
+    <loc>https://crezcocommune.in/services</loc>
+    <priority>0.80</priority>
+  </url>
+
+  <!-- Projects (if any) -->
+  <url>
+    <loc>https://crezcocommune.in/projects</loc>
+    <priority>0.70</priority>
+  </url>
+
+  <!-- Blog / News -->
+  <url>
+    <loc>https://crezcocommune.in/blog</loc>
+    <priority>0.70</priority>
+  </url>
+
+  <!-- Contact -->
+  <url>
+    <loc>https://crezcocommune.in/contact</loc>
+    <priority>0.80</priority>
+  </url>
+
+</urlset>
