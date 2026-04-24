@@ -4,6 +4,23 @@ import Footer from '../components/Footer';
 import { useUserRole } from '../context/UserRoleContext';
 import api from '../lib/axios';
 import { createPost, createEvent } from '../lib/api';
+import { 
+  User, 
+  Settings, 
+  Plus, 
+  Video, 
+  Image as ImageIcon, 
+  Users, 
+  Calendar, 
+  MessageSquare, 
+  Trophy, 
+  Rocket, 
+  ArrowRight,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  ChevronDown
+} from 'lucide-react';
 
 const Dashboard: React.FC = () => {
   const { user, userRole, loading: authLoading, roleLoading } = useUserRole();
@@ -16,6 +33,8 @@ const Dashboard: React.FC = () => {
   const [createLoading, setCreateLoading] = useState(false);
   const [newCollegeName, setNewCollegeName] = useState('');
   const [activePanel, setActivePanel] = useState<string | null>(null);
+  
+  // Forms state
   const [eventForm, setEventForm] = useState({ title: '', description: '', date: '', college: '' });
   const [eventSubmitted, setEventSubmitted] = useState(false);
   const [eventError, setEventError] = useState<string | null>(null);
@@ -27,7 +46,6 @@ const Dashboard: React.FC = () => {
   const [reelError, setReelError] = useState<string | null>(null);
   const [referralForm, setReferralForm] = useState({ name: '', type: '' });
   const [referralSubmitted, setReferralSubmitted] = useState(false);
-  const [statsData, setStatsData] = useState({ events: 0, posts: 0 });
 
   useEffect(() => {
     if (user) {
@@ -183,55 +201,44 @@ const Dashboard: React.FC = () => {
     }, 3000);
   };
 
-  const initials = displayName
-    ? displayName
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((s) => s[0]?.toUpperCase() || '')
-      .join('') || 'U'
-    : 'U';
+  const initials = useMemo(() => {
+    if (!displayName) return 'CC';
+    return displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  }, [displayName]);
 
-  if (authLoading) {
+  if (authLoading || (roleLoading && !userRole)) {
     return (
-      <div className="min-h-screen bg-[#05070A] text-white flex flex-col">
-        <Navbar />
-        <main className="flex-grow flex flex-col items-center justify-center p-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF2BCD] mb-4"></div>
-          <p className="text-gray-400 uppercase tracking-widest text-sm font-bold font-inter">Connecting...</p>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (roleLoading && !userRole) {
-    return (
-      <div className="min-h-screen bg-[#05070A] text-white flex flex-col">
-        <Navbar />
-        <main className="flex-grow flex flex-col items-center justify-center p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#FF2BCD] mb-4"></div>
-          <p className="text-gray-500 text-xs font-medium font-inter">Verifying permissions...</p>
-        </main>
-        <Footer />
+      <div className="min-h-screen bg-[#05070A] text-white flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-6">
+          <div className="w-16 h-16 border-4 border-[#FF2BCD]/20 border-t-[#FF2BCD] rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-black uppercase tracking-widest animate-pulse">Syncing Dashboard</p>
+        </div>
       </div>
     );
   }
 
   if (userRole !== 'cc') {
     return (
-      <div className="min-h-screen bg-[#05070A] text-white flex flex-col">
+      <div className="min-h-screen bg-[#05070A] text-white flex flex-col selection:bg-red-500/30">
         <Navbar />
-        <main className="flex-grow flex items-center justify-center px-4">
-          <div className="max-w-md w-full text-center">
-            <div className="bg-[#0D0F1A] border border-[#FF2BCD]/30 rounded-2xl p-8 shadow-2xl">
-              <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+        <main className="flex-grow flex items-center justify-center px-4 pt-20">
+          <div className="max-w-xl w-full">
+            <div className="bg-[#0D0F1A] border border-white/5 rounded-[2.5rem] p-12 text-center shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-red-500"></div>
+              <div className="w-24 h-24 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8">
+                <AlertCircle size={48} />
               </div>
-              <h1 className="text-2xl font-bold text-white mb-2 font-outfit">Access Restricted</h1>
-              <p className="text-gray-400 font-inter">Only Campus Coordinators can access this dashboard.</p>
+              <h1 className="text-4xl font-black mb-4">Access Denied</h1>
+              <p className="text-gray-400 text-lg mb-8 font-medium">
+                This dashboard is exclusive for <span className="text-white font-bold">Campus Coordinators</span>. 
+                If you believe this is an error, please contact support.
+              </p>
+              <button 
+                onClick={() => window.location.href = '/'}
+                className="px-10 py-4 bg-white text-black font-black rounded-2xl hover:scale-105 transition-transform"
+              >
+                Return to Home
+              </button>
             </div>
           </div>
         </main>
@@ -241,282 +248,410 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#05070A] text-white flex flex-col">
-        <Navbar />
+    <div className="min-h-screen bg-[#05070A] text-white flex flex-col selection:bg-[#FF2BCD]/30">
+      <Navbar />
 
-        <main className="flex-grow pt-32 pb-16 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-                {/* Header */}
-                <div className="bg-[#0D0F1A] border border-white/5 rounded-2xl p-8 mb-8 flex items-center space-x-6 relative overflow-hidden group">
-                    <div className="absolute top-[-20%] right-[-10%] w-[30%] h-[150%] bg-[#FF2BCD] opacity-5 blur-[100px] rounded-full group-hover:opacity-10 transition-opacity"></div>
-                    <div className="w-20 h-20 bg-gradient-to-br from-[#FF2BCD] via-[#8A2FFF] to-[#32F5FF] rounded-2xl flex items-center justify-center shadow-lg shadow-[#FF2BCD]/20 transform rotate-3">
-                        <span className="text-3xl font-bold text-white -rotate-3">{initials}</span>
-                    </div>
-                    <div>
-                        <h2 className="text-3xl font-bold text-white font-outfit mb-1">{displayName}</h2>
-                        <div className="flex items-center space-x-2">
-                            <span className="px-3 py-1 bg-[#FF2BCD]/20 text-[#FF2BCD] text-[10px] font-bold rounded-lg uppercase tracking-widest">
-                                Campus Coordinator
-                            </span>
-                        </div>
-                    </div>
+      <main className="flex-grow pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        {/* CC Hero Header */}
+        <div className="relative mb-12 group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-[#FF2BCD] via-[#8A2FFF] to-[#32F5FF] rounded-[3rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+          <div className="relative bg-[#0D0F1A] border border-white/10 rounded-[2.5rem] p-8 sm:p-12 overflow-hidden">
+             {/* Decorative Background Elements */}
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#FF2BCD] opacity-[0.03] blur-[100px] rounded-full"></div>
+            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#32F5FF] opacity-[0.03] blur-[100px] rounded-full"></div>
+
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-12 text-center md:text-left">
+              <div className="relative">
+                <div className="w-28 h-28 sm:w-36 sm:h-36 bg-gradient-to-br from-[#FF2BCD] via-[#8A2FFF] to-[#32F5FF] rounded-[2rem] flex items-center justify-center shadow-2xl shadow-[#FF2BCD]/20 transform -rotate-3 hover:rotate-0 transition-transform duration-500">
+                  <span className="text-4xl sm:text-5xl font-black text-white">{initials}</span>
                 </div>
-
-                {/* Quick Actions (Colleges) */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <div className="bg-[#0D0F1A] border border-white/5 rounded-2xl p-6">
-                        <h3 className="text-lg font-bold text-white mb-4 font-outfit">Join a College</h3>
-                        <div className="flex items-center space-x-3">
-                            <select
-                                className="flex-1 px-4 py-3 bg-[#05070A] border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#FF2BCD]/50 appearance-none font-inter text-sm"
-                                onChange={(e) => setSelectedCollegeId(e.target.value)}
-                                value={selectedCollegeId}
-                            >
-                                <option value="" disabled>Select a college</option>
-                                {availableColleges.map((c) => (
-                                    <option key={c._id || c.id} value={c._id || c.id}>{c.name}</option>
-                                ))}
-                            </select>
-                            <button
-                                onClick={() => handleJoinCollege(selectedCollegeId)}
-                                disabled={!selectedCollegeId || joinLoading}
-                                className="px-6 py-3 bg-[#FF2BCD] text-white font-bold rounded-xl disabled:opacity-50 hover:opacity-90 transition-all font-inter text-sm shadow-lg shadow-[#FF2BCD]/10"
-                            >
-                                {joinLoading ? 'Joining...' : 'Join'}
-                            </button>
-                        </div>
-                    </div>
-                    <div className="bg-[#0D0F1A] border border-white/5 rounded-2xl p-6">
-                        <h3 className="text-lg font-bold text-white mb-4 font-outfit">Launch New College</h3>
-                        <div className="flex items-center space-x-3">
-                            <input
-                                type="text"
-                                value={newCollegeName}
-                                onChange={(e) => setNewCollegeName(e.target.value)}
-                                placeholder="Enter college name"
-                                className="flex-1 px-4 py-3 bg-[#05070A] border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-[#32F5FF]/50 font-inter text-sm"
-                            />
-                            <button
-                                onClick={handleCreateCollege}
-                                disabled={!newCollegeName.trim() || createLoading}
-                                className="px-6 py-3 bg-[#32F5FF] text-black font-bold rounded-xl disabled:opacity-50 hover:opacity-90 transition-all font-inter text-sm shadow-lg shadow-[#32F5FF]/10"
-                            >
-                                {createLoading ? 'Launching...' : 'Launch'}
-                            </button>
-                        </div>
-                    </div>
+                <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#05070A] border-4 border-[#0D0F1A] rounded-full flex items-center justify-center text-green-400">
+                   <CheckCircle2 size={20} />
                 </div>
-
-                {/* Active Selection */}
-                {myColleges.length > 0 && (
-                    <div className="bg-[#0D0F1A] border border-white/5 rounded-2xl p-6 mb-8 flex items-center justify-between">
-                        <div className="text-gray-400 font-medium text-sm font-inter">Manage Community:</div>
-                        <select
-                            className="bg-transparent text-[#32F5FF] font-bold font-outfit focus:outline-none text-right cursor-pointer text-lg"
-                            value={selectedCollegeId}
-                            onChange={(e) => setSelectedCollegeId(e.target.value)}
-                        >
-                            {myColleges.map((c) => (
-                                <option key={c._id || c.id} value={c._id || c.id} className="bg-[#0D0F1A] text-white">{c.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                )}
-
-                {/* Dashboard Tools */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <button
-                        onClick={() => myColleges.length > 0 && setActivePanel(activePanel === 'event' ? null : 'event')}
-                        className={`p-6 rounded-2xl border transition-all flex flex-col items-center justify-center space-y-3 group ${activePanel === 'event' ? 'bg-[#32F5FF]/10 border-[#32F5FF]' : 'bg-[#0D0F1A] border-white/5 hover:border-[#32F5FF]/30'}`}
-                        disabled={myColleges.length === 0}
-                    >
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${activePanel === 'event' ? 'bg-[#32F5FF] text-black' : 'bg-gray-800 text-gray-400 group-hover:text-[#32F5FF]'}`}>
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                        </div>
-                        <span className="text-sm font-bold font-inter">Event</span>
-                    </button>
-
-                    <button
-                        onClick={() => myColleges.length > 0 && setActivePanel(activePanel === 'post' ? null : 'post')}
-                        className={`p-6 rounded-2xl border transition-all flex flex-col items-center justify-center space-y-3 group ${activePanel === 'post' ? 'bg-[#FF2BCD]/10 border-[#FF2BCD]' : 'bg-[#0D0F1A] border-white/5 hover:border-[#FF2BCD]/30'}`}
-                        disabled={myColleges.length === 0}
-                    >
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${activePanel === 'post' ? 'bg-[#FF2BCD] text-white' : 'bg-gray-800 text-gray-400 group-hover:text-[#FF2BCD]'}`}>
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                            </svg>
-                        </div>
-                        <span className="text-sm font-bold font-inter">Post</span>
-                    </button>
-
-                    <button
-                        onClick={() => myColleges.length > 0 && setActivePanel(activePanel === 'reel' ? null : 'reel')}
-                        className={`p-6 rounded-2xl border transition-all flex flex-col items-center justify-center space-y-3 group ${activePanel === 'reel' ? 'bg-[#8A2FFF]/10 border-[#8A2FFF]' : 'bg-[#0D0F1A] border-white/5 hover:border-[#8A2FFF]/30'}`}
-                        disabled={myColleges.length === 0}
-                    >
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${activePanel === 'reel' ? 'bg-[#8A2FFF] text-white' : 'bg-gray-800 text-gray-400 group-hover:text-[#8A2FFF]'}`}>
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <span className="text-sm font-bold font-inter">Reel</span>
-                    </button>
-
-                    <button
-                        onClick={() => setActivePanel(activePanel === 'referral' ? null : 'referral')}
-                        className={`p-6 rounded-2xl border transition-all flex flex-col items-center justify-center space-y-3 group ${activePanel === 'referral' ? 'bg-white/10 border-white' : 'bg-[#0D0F1A] border-white/5 hover:border-white/30'}`}
-                    >
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${activePanel === 'referral' ? 'bg-white text-black' : 'bg-gray-800 text-gray-400 group-hover:text-white'}`}>
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                            </svg>
-                        </div>
-                        <span className="text-sm font-bold font-inter">Referral</span>
-                    </button>
+              </div>
+              
+              <div className="flex-1 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <h2 className="text-4xl sm:text-5xl font-black tracking-tight">{displayName}</h2>
+                  <span className="inline-flex px-4 py-1.5 bg-[#FF2BCD]/10 border border-[#FF2BCD]/20 text-[#FF2BCD] text-[10px] font-black rounded-full uppercase tracking-widest w-fit mx-auto md:mx-0">
+                    Campus Coordinator
+                  </span>
                 </div>
+                <p className="text-gray-400 text-lg font-medium max-w-xl">
+                  Fueling growth and connection at <span className="text-[#32F5FF] font-bold">Crezco</span>. Manage your community, host events, and earn rewards.
+                </p>
+                <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-2">
+                   <div className="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
+                      <Trophy size={16} className="text-yellow-500" />
+                      <span className="text-sm font-bold">1,240 XP</span>
+                   </div>
+                   <div className="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
+                      <Users size={16} className="text-[#32F5FF]" />
+                      <span className="text-sm font-bold">{myColleges.length} Campuses</span>
+                   </div>
+                </div>
+              </div>
 
-                {/* Panel Rendering */}
-                {activePanel && (
-                    <div className="bg-[#0D0F1A] border border-white/5 rounded-2xl p-8 mb-8 animate-fade-in shadow-2xl">
-                        {activePanel === 'event' && (
-                            <div className="max-w-2xl mx-auto">
-                                <h3 className="text-2xl font-bold text-white mb-6 font-outfit">Create Event</h3>
-                                {eventSubmitted ? (
-                                    <div className="text-center py-10">
-                                        <div className="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                                            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        </div>
-                                        <h4 className="text-xl font-bold text-white mb-2">Event Launched!</h4>
-                                        <p className="text-gray-400">All members of your community will be notified.</p>
-                                    </div>
-                                ) : (
-                                    <form onSubmit={handleEventSubmit} className="space-y-6">
-                                        {eventError && <div className="p-4 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl text-sm">{eventError}</div>}
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div>
-                                                <label className="block text-gray-500 text-sm font-bold mb-2 uppercase tracking-widest font-inter">Title</label>
-                                                <input type="text" required value={eventForm.title} onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })} className="w-full px-4 py-3 bg-[#05070A] border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#32F5FF]/50" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-gray-500 text-sm font-bold mb-2 uppercase tracking-widest font-inter">Date</label>
-                                                <input type="date" required value={eventForm.date} onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })} className="w-full px-4 py-3 bg-[#05070A] border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#32F5FF]/50" />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-gray-500 text-sm font-bold mb-2 uppercase tracking-widest font-inter">Description</label>
-                                            <textarea required value={eventForm.description} onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })} className="w-full px-4 py-3 bg-[#05070A] border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#32F5FF]/50 resize-none h-32" />
-                                        </div>
-                                        <button type="submit" className="w-full py-4 bg-[#32F5FF] text-black font-bold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-[#32F5FF]/10 uppercase tracking-widest font-inter">Create Event</button>
-                                    </form>
-                                )}
-                            </div>
-                        )}
-
-                        {activePanel === 'post' && (
-                            <div className="max-w-2xl mx-auto">
-                                <h3 className="text-2xl font-bold text-white mb-6 font-outfit">Upload Post</h3>
-                                {postSubmitted ? (
-                                    <div className="text-center py-10">
-                                        <div className="w-20 h-20 bg-[#FF2BCD]/20 text-[#FF2BCD] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                                            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        </div>
-                                        <h4 className="text-xl font-bold text-white mb-2">Post Shared!</h4>
-                                        <p className="text-gray-400">Your post is now live on the community feed.</p>
-                                    </div>
-                                ) : (
-                                    <form onSubmit={handlePostSubmit} className="space-y-6">
-                                        {postError && <div className="p-4 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl text-sm">{postError}</div>}
-                                        <div>
-                                            <label className="block text-gray-500 text-sm font-bold mb-2 uppercase tracking-widest font-inter">Caption</label>
-                                            <textarea required value={postForm.caption} onChange={(e) => setPostForm({ ...postForm, caption: e.target.value })} className="w-full px-4 py-3 bg-[#05070A] border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#FF2BCD]/50 resize-none h-32" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-gray-500 text-sm font-bold mb-2 uppercase tracking-widest font-inter">Media (Optional)</label>
-                                            <input type="file" accept="image/*,video/*" onChange={(e) => setPostForm({ ...postForm, file: e.target.files?.[0] || null })} className="w-full px-4 py-3 bg-[#05070A] border border-white/10 rounded-xl text-white file:bg-transparent file:border-none file:text-[#FF2BCD] file:font-bold file:mr-4 file:cursor-pointer" />
-                                        </div>
-                                        <button type="submit" className="w-full py-4 bg-[#FF2BCD] text-white font-bold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-[#FF2BCD]/10 uppercase tracking-widest font-inter">Publish Post</button>
-                                    </form>
-                                )}
-                            </div>
-                        )}
-
-                        {activePanel === 'reel' && (
-                            <div className="max-w-2xl mx-auto">
-                                <h3 className="text-2xl font-bold text-white mb-6 font-outfit">Upload Reel</h3>
-                                {reelSubmitted ? (
-                                    <div className="text-center py-10">
-                                        <div className="w-20 h-20 bg-[#8A2FFF]/20 text-[#8A2FFF] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                                            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                            </svg>
-                                        </div>
-                                        <h4 className="text-xl font-bold text-white mb-2">Reel Uploaded!</h4>
-                                        <p className="text-gray-400">Short and sweet. Your reel is live.</p>
-                                    </div>
-                                ) : (
-                                    <form onSubmit={handleReelSubmit} className="space-y-6">
-                                        {reelError && <div className="p-4 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl text-sm">{reelError}</div>}
-                                        <div>
-                                            <label className="block text-gray-500 text-sm font-bold mb-2 uppercase tracking-widest font-inter">Caption</label>
-                                            <textarea required value={reelForm.caption} onChange={(e) => setReelForm({ ...reelForm, caption: e.target.value })} className="w-full px-4 py-3 bg-[#05070A] border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#8A2FFF]/50 resize-none h-20" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-gray-500 text-sm font-bold mb-2 uppercase tracking-widest font-inter">Video Source</label>
-                                            <input type="file" required accept="video/*" onChange={(e) => setReelForm({ ...reelForm, file: e.target.files?.[0] || null })} className="w-full px-4 py-3 bg-[#05070A] border border-white/10 rounded-xl text-white file:bg-transparent file:border-none file:text-[#8A2FFF] file:font-bold file:mr-4 file:cursor-pointer" />
-                                        </div>
-                                        <button type="submit" className="w-full py-4 bg-[#8A2FFF] text-white font-bold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-[#8A2FFF]/10 uppercase tracking-widest font-inter">Push Reel Live</button>
-                                    </form>
-                                )}
-                            </div>
-                        )}
-
-                        {activePanel === 'referral' && (
-                            <div className="max-w-2xl mx-auto">
-                                <h3 className="text-2xl font-bold text-white mb-6 font-outfit">Submit Referral</h3>
-                                {referralSubmitted ? (
-                                    <div className="text-center py-10">
-                                        <div className="w-20 h-20 bg-white/10 text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                                            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                            </svg>
-                                        </div>
-                                        <h4 className="text-xl font-bold text-white mb-2">Referral Logged!</h4>
-                                        <p className="text-gray-400">Our team will review your referral soon.</p>
-                                    </div>
-                                ) : (
-                                    <form onSubmit={handleReferralSubmit} className="space-y-6">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div>
-                                                <label className="block text-gray-500 text-sm font-bold mb-2 uppercase tracking-widest font-inter">Candidate Name</label>
-                                                <input type="text" required value={referralForm.name} onChange={(e) => setReferralForm({ ...referralForm, name: e.target.value })} className="w-full px-4 py-3 bg-[#05070A] border border-white/10 rounded-xl text-white focus:outline-none focus:border-white/50" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-gray-500 text-sm font-bold mb-2 uppercase tracking-widest font-inter">Referral Type</label>
-                                                <select required value={referralForm.type} onChange={(e) => setReferralForm({ ...referralForm, type: e.target.value })} className="w-full px-4 py-3 bg-[#05070A] border border-white/10 rounded-xl text-white focus:outline-none focus:border-white/50 font-inter">
-                                                    <option value="">Select Category</option>
-                                                    <option value="Hiring">Hiring</option>
-                                                    <option value="Product">Product</option>
-                                                    <option value="Event">Event</option>
-                                                    <option value="CC">Candidate CC</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <button type="submit" className="w-full py-4 bg-white text-black font-bold rounded-xl hover:opacity-90 transition-all shadow-lg uppercase tracking-widest font-inter">Log Referral</button>
-                                    </form>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                )}
+              <button className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-colors hidden lg:block">
+                 <Settings size={24} className="text-gray-400" />
+              </button>
             </div>
-        </main>
-        <Footer />
+          </div>
+        </div>
+
+        {/* Campus Management Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          {/* Join College */}
+          <div className="bg-[#0D0F1A] border border-white/5 rounded-[2rem] p-8 shadow-xl">
+            <div className="flex items-center space-x-4 mb-8">
+               <div className="p-3 bg-[#FF2BCD]/10 rounded-2xl text-[#FF2BCD]">
+                 <Users size={24} />
+               </div>
+               <h3 className="text-2xl font-black">Join Campus</h3>
+            </div>
+            <div className="space-y-6">
+              <div className="relative group">
+                <select
+                  value={selectedCollegeId}
+                  onChange={(e) => setSelectedCollegeId(e.target.value)}
+                  className="w-full bg-[#05070A] border border-white/10 rounded-2xl px-6 py-4 text-white font-bold focus:outline-none focus:border-[#FF2BCD]/50 appearance-none cursor-pointer"
+                >
+                  <option value="" disabled>Select a college to join</option>
+                  {availableColleges.map((c) => (
+                      <option key={c._id || c.id} value={c._id || c.id} className="bg-[#0D0F1A]">{c.name}</option>
+                  ))}
+                </select>
+                <ChevronDown size={20} className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none group-focus-within:rotate-180 transition-transform" />
+              </div>
+              <button
+                onClick={() => handleJoinCollege(selectedCollegeId)}
+                disabled={!selectedCollegeId || joinLoading}
+                className="w-full py-4 bg-white text-black font-black rounded-2xl hover:bg-gray-200 disabled:opacity-50 transition-all flex items-center justify-center space-x-2"
+              >
+                {joinLoading ? <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></div> : <><Plus size={20} /> <span>Join Community</span></>}
+              </button>
+            </div>
+          </div>
+
+          {/* Launch New College */}
+          <div className="bg-[#0D0F1A] border border-white/5 rounded-[2rem] p-8 shadow-xl">
+            <div className="flex items-center space-x-4 mb-8">
+               <div className="p-3 bg-[#32F5FF]/10 rounded-2xl text-[#32F5FF]">
+                 <Rocket size={24} />
+               </div>
+               <h3 className="text-2xl font-black">Launch New Campus</h3>
+            </div>
+            <div className="space-y-6">
+              <input
+                type="text"
+                value={newCollegeName}
+                onChange={(e) => setNewCollegeName(e.target.value)}
+                placeholder="Ex: Stanford University"
+                className="w-full bg-[#05070A] border border-white/10 rounded-2xl px-6 py-4 text-white font-bold focus:outline-none focus:border-[#32F5FF]/50 placeholder:text-gray-600"
+              />
+              <button
+                onClick={handleCreateCollege}
+                disabled={!newCollegeName.trim() || createLoading}
+                className="w-full py-4 bg-[#32F5FF] text-black font-black rounded-2xl hover:shadow-[0_0_30px_rgba(50,245,255,0.2)] disabled:opacity-50 transition-all flex items-center justify-center space-x-2"
+              >
+                {createLoading ? <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></div> : <><Rocket size={20} /> <span>Initialize Campus</span></>}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Community Selector (Floating Bar) */}
+        {myColleges.length > 0 && (
+          <div className="sticky top-24 z-40 mb-12">
+            <div className="bg-[#0D0F1A]/80 backdrop-blur-xl border border-white/10 rounded-3xl p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl">
+              <div className="flex items-center space-x-3 text-gray-400">
+                <Users size={18} />
+                <span className="text-sm font-black uppercase tracking-widest">Active Community</span>
+              </div>
+              <div className="relative min-w-[250px] w-full sm:w-auto">
+                <select
+                  value={selectedCollegeId}
+                  onChange={(e) => setSelectedCollegeId(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-3 text-[#32F5FF] font-black appearance-none focus:outline-none"
+                >
+                  {myColleges.map((c) => (
+                      <option key={c._id || c.id} value={c._id || c.id} className="bg-[#0D0F1A] text-white">{c.name}</option>
+                  ))}
+                </select>
+                <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#32F5FF]" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tool Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-12">
+          {[
+            { id: 'event', label: 'Event', icon: Calendar, color: '#32F5FF' },
+            { id: 'post', label: 'Post', icon: ImageIcon, color: '#FF2BCD' },
+            { id: 'reel', label: 'Reel', icon: Video, color: '#8A2FFF' },
+            { id: 'referral', label: 'Referral', icon: Users, color: '#FFFFFF' }
+          ].map((tool) => (
+            <button
+              key={tool.id}
+              onClick={() => (tool.id === 'referral' || myColleges.length > 0) && setActivePanel(activePanel === tool.id ? null : tool.id)}
+              disabled={tool.id !== 'referral' && myColleges.length === 0}
+              className={`relative group p-6 sm:p-8 rounded-[2.5rem] border transition-all duration-500 overflow-hidden flex flex-col items-center justify-center space-y-4 disabled:opacity-30 ${activePanel === tool.id ? 'bg-white/5 border-white/20 shadow-2xl scale-[1.02]' : 'bg-[#0D0F1A] border-white/5 hover:border-white/20'}`}
+            >
+              {/* Highlight Background */}
+              {activePanel === tool.id && <div className="absolute inset-0 bg-gradient-to-br opacity-5" style={{ background: tool.color }}></div>}
+              
+              <div 
+                className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-xl"
+                style={{ 
+                  backgroundColor: activePanel === tool.id ? tool.color : 'rgba(255,255,255,0.05)',
+                  color: activePanel === tool.id ? (tool.id === 'event' || tool.id === 'referral' ? 'black' : 'white') : tool.color
+                }}
+              >
+                <tool.icon size={tool.id === 'referral' ? 24 : 32} className="sm:w-8 sm:h-8" />
+              </div>
+              <span className={`text-sm sm:text-base font-black transition-colors ${activePanel === tool.id ? 'text-white' : 'text-gray-500 group-hover:text-white'}`}>
+                {tool.label}
+              </span>
+              
+              {activePanel === tool.id && (
+                <div className="absolute bottom-4 animate-bounce">
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: tool.color }}></div>
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Dynamic Panels */}
+        {activePanel && (
+          <div className="bg-[#0D0F1A] border border-white/10 rounded-[3rem] p-8 sm:p-12 mb-12 shadow-2xl animate-in slide-in-from-bottom-8 duration-500">
+             {activePanel === 'event' && (
+                <div className="max-w-3xl mx-auto">
+                   <div className="flex items-center space-x-6 mb-10">
+                      <div className="w-14 h-14 bg-[#32F5FF] text-black rounded-2xl flex items-center justify-center">
+                         <Calendar size={28} />
+                      </div>
+                      <div>
+                         <h3 className="text-3xl font-black">Create Event</h3>
+                         <p className="text-gray-500 font-medium">Broadcast your upcoming campus activities</p>
+                      </div>
+                   </div>
+
+                   {eventSubmitted ? (
+                      <div className="text-center py-16 animate-in zoom-in duration-300">
+                         <div className="w-24 h-24 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_50px_rgba(34,197,94,0.2)]">
+                            <CheckCircle2 size={48} />
+                         </div>
+                         <h4 className="text-3xl font-black mb-4">Event Synchronized!</h4>
+                         <p className="text-gray-400 text-lg">Your community has been notified of the new event.</p>
+                      </div>
+                   ) : (
+                      <form onSubmit={handleEventSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                         {eventError && <div className="col-span-full p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl font-bold flex items-center space-x-3"><AlertCircle size={18} /> <span>{eventError}</span></div>}
+                         <div className="space-y-3">
+                            <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Event Title</label>
+                            <input type="text" required value={eventForm.title} onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })} className="w-full bg-[#05070A] border border-white/10 rounded-2xl px-6 py-4 text-white font-bold focus:border-[#32F5FF]/50 outline-none" placeholder="Ex: Crezco Tech Night" />
+                         </div>
+                         <div className="space-y-3">
+                            <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Event Date</label>
+                            <input type="date" required value={eventForm.date} onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })} className="w-full bg-[#05070A] border border-white/10 rounded-2xl px-6 py-4 text-white font-bold focus:border-[#32F5FF]/50 outline-none" />
+                         </div>
+                         <div className="col-span-full space-y-3">
+                            <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Description</label>
+                            <textarea required value={eventForm.description} onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })} className="w-full h-40 bg-[#05070A] border border-white/10 rounded-2xl px-6 py-5 text-white font-medium focus:border-[#32F5FF]/50 outline-none resize-none" placeholder="Details about the event..." />
+                         </div>
+                         <button type="submit" className="col-span-full py-5 bg-[#32F5FF] text-black font-black rounded-2xl hover:shadow-[0_0_40px_rgba(50,245,255,0.3)] transition-all flex items-center justify-center space-x-3">
+                            <Rocket size={20} />
+                            <span>Launch Event</span>
+                         </button>
+                      </form>
+                   )}
+                </div>
+             )}
+
+             {activePanel === 'post' && (
+                <div className="max-w-3xl mx-auto">
+                   <div className="flex items-center space-x-6 mb-10">
+                      <div className="w-14 h-14 bg-[#FF2BCD] text-white rounded-2xl flex items-center justify-center">
+                         <ImageIcon size={28} />
+                      </div>
+                      <div>
+                         <h3 className="text-3xl font-black">Upload Post</h3>
+                         <p className="text-gray-500 font-medium">Share updates and photos with your campus</p>
+                      </div>
+                   </div>
+
+                   {postSubmitted ? (
+                      <div className="text-center py-16">
+                         <div className="w-24 h-24 bg-[#FF2BCD]/10 text-[#FF2BCD] rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_50px_rgba(255,43,205,0.2)]">
+                            <CheckCircle2 size={48} />
+                         </div>
+                         <h4 className="text-3xl font-black mb-4">Post Published!</h4>
+                         <p className="text-gray-400 text-lg">Your update is now live on the community feed.</p>
+                      </div>
+                   ) : (
+                      <form onSubmit={handlePostSubmit} className="space-y-8">
+                         {postError && <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl font-bold flex items-center space-x-3"><AlertCircle size={18} /> <span>{postError}</span></div>}
+                         <div className="space-y-3">
+                            <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Caption</label>
+                            <textarea required value={postForm.caption} onChange={(e) => setPostForm({ ...postForm, caption: e.target.value })} className="w-full h-40 bg-[#05070A] border border-white/10 rounded-2xl px-6 py-5 text-white font-medium focus:border-[#FF2BCD]/50 outline-none resize-none" placeholder="What's happening?" />
+                         </div>
+                         <div className="space-y-3">
+                            <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Media</label>
+                            <label className="flex flex-col items-center justify-center w-full h-32 bg-[#05070A] border-2 border-dashed border-white/10 rounded-[2rem] cursor-pointer hover:border-[#FF2BCD]/50 hover:bg-white/5 transition-all">
+                               <input type="file" accept="image/*,video/*" onChange={(e) => setPostForm({ ...postForm, file: e.target.files?.[0] || null })} className="hidden" />
+                               {postForm.file ? (
+                                  <div className="flex items-center space-x-3">
+                                     <CheckCircle2 size={20} className="text-[#FF2BCD]" />
+                                     <span className="font-bold text-white truncate max-w-[250px]">{postForm.file.name}</span>
+                                  </div>
+                               ) : (
+                                  <div className="flex flex-col items-center text-gray-500">
+                                     <Plus size={24} className="mb-2" />
+                                     <span className="text-xs font-black uppercase tracking-widest">Select Image/Video</span>
+                                  </div>
+                               )}
+                            </label>
+                         </div>
+                         <button type="submit" className="w-full py-5 bg-[#FF2BCD] text-white font-black rounded-2xl hover:shadow-[0_0_40px_rgba(255,43,205,0.3)] transition-all flex items-center justify-center space-x-3">
+                            <ArrowRight size={20} />
+                            <span>Publish to Feed</span>
+                         </button>
+                      </form>
+                   )}
+                </div>
+             )}
+
+             {activePanel === 'reel' && (
+                <div className="max-w-3xl mx-auto">
+                   <div className="flex items-center space-x-6 mb-10">
+                      <div className="w-14 h-14 bg-[#8A2FFF] text-white rounded-2xl flex items-center justify-center">
+                         <Video size={28} />
+                      </div>
+                      <div>
+                         <h3 className="text-3xl font-black">Upload Reel</h3>
+                         <p className="text-gray-500 font-medium">Short vertical videos for high engagement</p>
+                      </div>
+                   </div>
+
+                   {reelSubmitted ? (
+                      <div className="text-center py-16">
+                         <div className="w-24 h-24 bg-[#8A2FFF]/10 text-[#8A2FFF] rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_50px_rgba(138,47,255,0.2)]">
+                            <CheckCircle2 size={48} />
+                         </div>
+                         <h4 className="text-3xl font-black mb-4">Reel is Live!</h4>
+                         <p className="text-gray-400 text-lg">Your short content is now reaching your community.</p>
+                      </div>
+                   ) : (
+                      <form onSubmit={handleReelSubmit} className="space-y-8">
+                         {reelError && <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl font-bold flex items-center space-x-3"><AlertCircle size={18} /> <span>{reelError}</span></div>}
+                         <div className="space-y-3">
+                            <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Caption</label>
+                            <textarea required value={reelForm.caption} onChange={(e) => setReelForm({ ...reelForm, caption: e.target.value })} className="w-full h-32 bg-[#05070A] border border-white/10 rounded-2xl px-6 py-5 text-white font-medium focus:border-[#8A2FFF]/50 outline-none resize-none" placeholder="Add a catchy caption..." />
+                         </div>
+                         <div className="space-y-3">
+                            <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Reel Video (Required)</label>
+                            <label className="flex flex-col items-center justify-center w-full h-40 bg-[#05070A] border-2 border-dashed border-white/10 rounded-[2rem] cursor-pointer hover:border-[#8A2FFF]/50 hover:bg-white/5 transition-all">
+                               <input type="file" required accept="video/*" onChange={(e) => setReelForm({ ...reelForm, file: e.target.files?.[0] || null })} className="hidden" />
+                               {reelForm.file ? (
+                                  <div className="flex flex-col items-center space-y-2">
+                                     <div className="p-3 bg-[#8A2FFF]/10 rounded-full text-[#8A2FFF]">
+                                        <Video size={24} />
+                                     </div>
+                                     <span className="font-bold text-white truncate max-w-[250px]">{reelForm.file.name}</span>
+                                  </div>
+                               ) : (
+                                  <div className="flex flex-col items-center text-gray-500">
+                                     <Plus size={32} className="mb-2" />
+                                     <span className="text-sm font-black uppercase tracking-widest">Select Video File</span>
+                                  </div>
+                               )}
+                            </label>
+                         </div>
+                         <button type="submit" disabled={!reelForm.file} className="w-full py-5 bg-[#8A2FFF] text-white font-black rounded-2xl hover:shadow-[0_0_40px_rgba(138,47,255,0.3)] transition-all flex items-center justify-center space-x-3 disabled:opacity-50">
+                            <Rocket size={20} />
+                            <span>Push Reel Live</span>
+                         </button>
+                      </form>
+                   )}
+                </div>
+             )}
+
+             {activePanel === 'referral' && (
+                <div className="max-w-3xl mx-auto">
+                   <div className="flex items-center space-x-6 mb-10">
+                      <div className="w-14 h-14 bg-white text-black rounded-2xl flex items-center justify-center">
+                         <Users size={28} />
+                      </div>
+                      <div>
+                         <h3 className="text-3xl font-black">Submit Referral</h3>
+                         <p className="text-gray-500 font-medium">Earn rewards for growing the Crezco network</p>
+                      </div>
+                   </div>
+
+                   {referralSubmitted ? (
+                      <div className="text-center py-16">
+                         <div className="w-24 h-24 bg-white/10 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_50px_rgba(255,255,255,0.1)]">
+                            <CheckCircle2 size={48} />
+                         </div>
+                         <h4 className="text-3xl font-black mb-4">Referral Received!</h4>
+                         <p className="text-gray-400 text-lg">Our vetting team will review the candidate and update you.</p>
+                      </div>
+                   ) : (
+                      <form onSubmit={handleReferralSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                         <div className="space-y-3">
+                            <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Candidate Name</label>
+                            <input type="text" required value={referralForm.name} onChange={(e) => setReferralForm({ ...referralForm, name: e.target.value })} className="w-full bg-[#05070A] border border-white/10 rounded-2xl px-6 py-4 text-white font-bold focus:border-white/50 outline-none" placeholder="Ex: John Smith" />
+                         </div>
+                         <div className="space-y-3">
+                            <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Category</label>
+                            <div className="relative">
+                               <select required value={referralForm.type} onChange={(e) => setReferralForm({ ...referralForm, type: e.target.value })} className="w-full bg-[#05070A] border border-white/10 rounded-2xl px-6 py-4 text-white font-bold focus:border-white/50 outline-none appearance-none">
+                                  <option value="">Select Referral Type</option>
+                                  <option value="Hiring">Hiring Recommendation</option>
+                                  <option value="Product">Product Partnership</option>
+                                  <option value="Event">Event Collaboration</option>
+                                  <option value="CC">Candidate Coordinator</option>
+                               </select>
+                               <ChevronDown size={18} className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-500" />
+                            </div>
+                         </div>
+                         <button type="submit" className="col-span-full py-5 bg-white text-black font-black rounded-2xl hover:scale-[1.02] transition-transform shadow-xl flex items-center justify-center space-x-3">
+                            <Send size={20} />
+                            <span>Log Referral</span>
+                         </button>
+                      </form>
+                   )}
+                </div>
+             )}
+          </div>
+        )}
+
+        {/* CC Activity Stats (Placeholder for future feature) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+           <div className="bg-[#0D0F1A] border border-white/5 rounded-[2rem] p-8">
+              <div className="text-gray-500 text-xs font-black uppercase tracking-[0.2em] mb-2">Total Outreach</div>
+              <div className="text-4xl font-black">4.2k</div>
+              <div className="text-green-500 text-xs font-bold mt-2 flex items-center space-x-1">
+                 <span>↑ 12%</span>
+                 <span className="text-gray-600 font-medium">from last week</span>
+              </div>
+           </div>
+           <div className="bg-[#0D0F1A] border border-white/5 rounded-[2rem] p-8">
+              <div className="text-gray-500 text-xs font-black uppercase tracking-[0.2em] mb-2">Events Hosted</div>
+              <div className="text-4xl font-black">08</div>
+              <div className="text-[#32F5FF] text-xs font-bold mt-2">Next: Hackathon (May 12)</div>
+           </div>
+           <div className="bg-[#0D0F1A] border border-white/5 rounded-[2rem] p-8">
+              <div className="text-gray-500 text-xs font-black uppercase tracking-[0.2em] mb-2">Referral Rewards</div>
+              <div className="text-4xl font-black">₹ 1,500</div>
+              <div className="text-[#FF2BCD] text-xs font-bold mt-2">Redeemable now</div>
+           </div>
+        </div>
+      </main>
+
+      <Footer />
     </div>
   );
 };

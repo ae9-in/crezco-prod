@@ -24,6 +24,7 @@ app.use('/api/reels', require('./routes/reels'));
 app.use('/api/interactions', require('./routes/interactions'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/leaderboard', require('./routes/leaderboard'));
+app.use('/api/gigs', require('./routes/gigs'));
 
 app.get('/api/metrics', async (req, res) => {
     try {

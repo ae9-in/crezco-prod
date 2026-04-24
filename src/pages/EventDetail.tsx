@@ -1,8 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import api from '../lib/axios';
+import { 
+  Calendar, 
+  MapPin, 
+  User, 
+  Clock, 
+  ChevronLeft, 
+  Share2, 
+  Zap, 
+  ShieldCheck, 
+  CheckCircle2, 
+  AlertCircle,
+  Ticket,
+  Sparkles,
+  ArrowRight
+} from 'lucide-react';
 
 const EventDetail: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -33,8 +48,9 @@ const EventDetail: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#05070A] text-white flex flex-col">
         <Navbar />
-        <main className="flex-grow flex items-center justify-center p-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#32F5FF]"></div>
+        <main className="flex-grow flex flex-col items-center justify-center p-8 space-y-4">
+            <div className="w-16 h-16 border-4 border-white/5 border-t-[#32F5FF] rounded-full animate-spin"></div>
+            <p className="text-gray-500 font-black uppercase tracking-widest text-[10px]">Materializing Event Details</p>
         </main>
         <Footer />
       </div>
@@ -45,100 +61,186 @@ const EventDetail: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#05070A] text-white flex flex-col">
         <Navbar />
-        <main className="flex-grow flex flex-col items-center justify-center h-screen text-center px-4">
-          <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-6">
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+        <main className="flex-grow flex flex-col items-center justify-center text-center px-6 py-32">
+          <div className="w-20 h-20 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-8">
+            <AlertCircle size={40} />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2 font-outfit">{error || 'Event not found'}</h1>
-          <p className="text-gray-400 mb-8 font-inter">The event you are looking for might have been removed or is unavailable.</p>
-          <button onClick={() => navigate('/events')} className="px-8 py-3 bg-[#32F5FF] text-black font-bold rounded-xl transition-all shadow-lg shadow-[#32F5FF]/10 uppercase tracking-widest text-xs font-inter">Back to Events</button>
+          <h1 className="text-3xl font-black mb-4 uppercase tracking-tight">{error || 'Intelligence Missing'}</h1>
+          <p className="text-gray-500 mb-10 font-medium italic">The requested event has been decoupled from the network or moved.</p>
+          <button onClick={() => navigate('/events')} className="px-10 py-5 bg-white/5 border border-white/10 text-white font-black rounded-2xl hover:bg-white/10 transition-all">
+            Return to Hub
+          </button>
         </main>
         <Footer />
       </div>
     );
   }
 
+  const date = new Date(event.event_date);
+
   return (
-    <div className="min-h-screen bg-[#05070A] text-white flex flex-col">
+    <div className="min-h-screen bg-[#05070A] text-white flex flex-col selection:bg-[#32F5FF]/30">
       <Navbar />
 
-      <main className="flex-grow pt-32 pb-16">
-        {/* Event Banner */}
-        <section className="relative py-20 px-4 group">
-          <div className="absolute inset-x-0 top-0 h-full bg-gradient-to-br from-[#0D0F1A] via-[#151926] to-[#0A0F15] border-b border-white/5 overflow-hidden">
-            <div className="absolute top-[-20%] right-[-10%] w-[30%] h-[150%] bg-[#8A2FFF] opacity-5 blur-[100px] rounded-full group-hover:opacity-10 transition-opacity"></div>
-            <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[120%] bg-[#32F5FF] opacity-5 blur-[120px] rounded-full group-hover:opacity-10 transition-opacity"></div>
-          </div>
-          
-          <div className="relative z-10 max-w-4xl mx-auto text-center">
-            <div className="inline-block px-3 py-1 bg-white/5 border border-white/10 text-gray-400 text-[10px] rounded-lg font-bold uppercase tracking-widest mb-6 font-inter underline decoration-[#32F5FF] underline-offset-4 decoration-2">
-                {event.college_id?.name || 'On Campus'}
-            </div>
-            <h1 className="text-4xl sm:text-6xl font-black mb-8 font-outfit">
-              <span className="bg-gradient-to-r from-[#FF2BCD] via-[#8A2FFF] to-[#32F5FF] bg-clip-text text-transparent">
-                {event.title}
-              </span>
-            </h1>
-            
-            <div className="flex flex-wrap justify-center gap-6">
-                <div className="flex items-center text-gray-400 text-sm font-inter">
-                    <svg className="w-5 h-5 mr-3 text-[#32F5FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    {new Date(event.event_date).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}
-                </div>
-                <div className="flex items-center text-gray-400 text-sm font-inter">
-                    <svg className="w-5 h-5 mr-3 text-[#8A2FFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    By {event.created_by?.name || 'Campus Coordinator'}
-                </div>
-            </div>
-          </div>
-        </section>
+      <main className="flex-grow pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        {/* Navigation & Actions */}
+        <div className="flex items-center justify-between mb-12">
+           <button onClick={() => navigate('/events')} className="flex items-center space-x-2 text-gray-500 hover:text-white transition-colors group">
+              <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Back to Hub</span>
+           </button>
+           <button className="p-3 bg-white/5 border border-white/10 rounded-2xl text-gray-400 hover:text-white transition-all group">
+              <Share2 size={18} className="group-hover:scale-110 transition-transform" />
+           </button>
+        </div>
 
-        {/* Content */}
-        <section className="py-16 px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-              <div className="lg:col-span-2">
-                <div className="flex items-center space-x-3 mb-8">
-                    <div className="w-1.5 h-8 bg-gradient-to-b from-[#8A2FFF] to-[#FF2BCD] rounded-full"></div>
-                    <h2 className="text-2xl font-bold font-outfit uppercase tracking-wider">About this event</h2>
-                </div>
-                <p className="text-gray-400 text-lg leading-relaxed font-inter whitespace-pre-wrap">
-                  {event.description || 'Join us for this exciting campus event.'}
-                </p>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+           
+           {/* Left Column: Event Core Info */}
+           <div className="lg:col-span-8 space-y-12">
+              <div className="space-y-6">
+                 <div className="inline-flex items-center space-x-3 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
+                    <Sparkles size={14} className="text-[#32F5FF]" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#32F5FF]">Live Event Intelligence</span>
+                 </div>
+                 <h1 className="text-5xl sm:text-7xl font-black leading-tight tracking-tight">
+                   {event.title}
+                 </h1>
+                 <div className="flex flex-wrap gap-4 pt-4">
+                    <div className="flex items-center space-x-3 px-5 py-3 bg-white/5 rounded-2xl border border-white/10">
+                       <div className="p-2 bg-[#32F5FF]/10 rounded-lg text-[#32F5FF]">
+                          <Calendar size={18} />
+                       </div>
+                       <div className="text-left">
+                          <p className="text-[8px] font-black uppercase tracking-widest text-gray-500">Date</p>
+                          <p className="text-sm font-black">{date.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                       </div>
+                    </div>
+                    <div className="flex items-center space-x-3 px-5 py-3 bg-white/5 rounded-2xl border border-white/10">
+                       <div className="p-2 bg-[#8A2FFF]/10 rounded-lg text-[#8A2FFF]">
+                          <MapPin size={18} />
+                       </div>
+                       <div className="text-left">
+                          <p className="text-[8px] font-black uppercase tracking-widest text-gray-500">Location</p>
+                          <p className="text-sm font-black">{event.college_id?.name || 'Main Hub'}</p>
+                       </div>
+                    </div>
+                    <div className="flex items-center space-x-3 px-5 py-3 bg-white/5 rounded-2xl border border-white/10">
+                       <div className="p-2 bg-[#FF2BCD]/10 rounded-lg text-[#FF2BCD]">
+                          <User size={18} />
+                       </div>
+                       <div className="text-left">
+                          <p className="text-[8px] font-black uppercase tracking-widest text-gray-500">Host</p>
+                          <p className="text-sm font-black truncate max-w-[120px]">{event.created_by?.name || 'Coordinator'}</p>
+                       </div>
+                    </div>
+                 </div>
               </div>
 
-              <div className="bg-[#0D0F1A] border border-white/5 rounded-3xl p-8 h-fit shadow-2xl">
-                <h2 className="text-xl font-bold mb-8 font-outfit text-white underline decoration-[#32F5FF] decoration-2 underline-offset-4">Event Pass</h2>
-                <div className="space-y-6 mb-10">
-                  <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-1 font-inter">Status</p>
-                    <p className="text-white font-bold flex items-center">
-                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-                        Open for Registration
-                    </p>
-                  </div>
-                  <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-1 font-inter">Price</p>
-                    <p className="text-white font-bold text-lg font-outfit">FREE ENTRY</p>
-                  </div>
-                </div>
-
-                <button className="w-full py-5 bg-gradient-to-br from-[#FF2BCD] via-[#8A2FFF] to-[#32F5FF] text-white font-black rounded-2xl hover:shadow-[0_0_25px_rgba(255,43,205,0.4)] transition-all uppercase tracking-widest text-sm font-inter">
-                  Get Your Pass
-                </button>
-                <p className="text-center text-gray-500 text-[10px] mt-4 font-inter uppercase tracking-widest">
-                  Valid for 1 Entry Only
-                </p>
+              {/* Event Visualization Placeholder */}
+              <div className="aspect-video w-full bg-[#0D0F1A] border border-white/10 rounded-[3rem] overflow-hidden relative group">
+                 <div className="absolute inset-0 bg-gradient-to-br from-[#32F5FF]/5 via-transparent to-[#FF2BCD]/5 opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
+                 <div className="absolute inset-0 flex items-center justify-center opacity-10">
+                    <Ticket size={120} className="text-white" />
+                 </div>
+                 <div className="absolute inset-0 p-12 flex items-end">
+                    <div className="space-y-4">
+                       <div className="h-1 w-24 bg-[#32F5FF] rounded-full"></div>
+                       <h3 className="text-2xl font-black italic text-gray-500">Exclusive Campus Access</h3>
+                    </div>
+                 </div>
               </div>
-            </div>
-          </div>
+
+              {/* Description */}
+              <div className="space-y-8">
+                 <h2 className="text-3xl font-black uppercase tracking-tight flex items-center space-x-4">
+                    <div className="w-2 h-10 bg-[#32F5FF] rounded-full"></div>
+                    <span>Intelligence Log</span>
+                 </h2>
+                 <p className="text-gray-400 text-lg sm:text-xl font-medium leading-relaxed whitespace-pre-wrap italic">
+                    {event.description || 'No detailed description provided for this session.'}
+                 </p>
+              </div>
+           </div>
+
+           {/* Right Column: Ticket / RSVP */}
+           <div className="lg:col-span-4">
+              <div className="sticky top-32 space-y-8">
+                 
+                 {/* Ticket Card */}
+                 <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#FF2BCD] via-[#8A2FFF] to-[#32F5FF] rounded-[3rem] blur-2xl opacity-10 group-hover:opacity-20 transition-opacity duration-700"></div>
+                    <div className="relative bg-[#0D0F1A]/80 backdrop-blur-3xl border border-white/10 rounded-[3rem] overflow-hidden shadow-2xl">
+                       <div className="p-8 space-y-8">
+                          <div className="flex items-center justify-between">
+                             <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#32F5FF]">Official Pass</h3>
+                             <ShieldCheck size={18} className="text-gray-500" />
+                          </div>
+                          
+                          <div className="py-8 border-y border-white/5 border-dashed space-y-6">
+                             <div className="flex justify-between items-center">
+                                <span className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Entry Type</span>
+                                <span className="text-white font-black">Standard Access</span>
+                             </div>
+                             <div className="flex justify-between items-center">
+                                <span className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Pricing</span>
+                                <span className="text-2xl font-black text-[#32F5FF]">FREE</span>
+                             </div>
+                             <div className="flex justify-between items-center">
+                                <span className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Availability</span>
+                                <div className="flex items-center space-x-2">
+                                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                                   <span className="text-green-500 font-black text-xs">OPEN</span>
+                                </div>
+                             </div>
+                          </div>
+
+                          <button className="w-full py-6 bg-white text-black font-black rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-3 shadow-2xl">
+                             <Zap size={20} />
+                             <span>Claim Pass Now</span>
+                          </button>
+                       </div>
+                       
+                       <div className="bg-white/5 p-6 text-center">
+                          <p className="text-[8px] font-black uppercase tracking-[0.4em] text-gray-600">Limited Capacity • Verified Entry</p>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Extra Info */}
+                 <div className="p-8 bg-white/5 border border-white/10 rounded-[3rem] space-y-6">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center space-x-2">
+                       <Clock size={12} />
+                       <span>Event Protocols</span>
+                    </h4>
+                    <ul className="space-y-4">
+                       {[
+                         'Valid student ID required for physical entry',
+                         'Registration closes 2 hours before start',
+                         'Passes are non-transferable'
+                       ].map((item, i) => (
+                         <li key={i} className="flex items-start space-x-3 text-xs font-medium text-gray-400">
+                            <CheckCircle2 size={14} className="text-[#32F5FF] shrink-0 mt-0.5" />
+                            <span>{item}</span>
+                         </li>
+                       ))}
+                    </ul>
+                 </div>
+
+              </div>
+           </div>
+
+        </div>
+
+        {/* Global Footer Teaser */}
+        <section className="mt-32 pt-20 border-t border-white/5 flex flex-col items-center text-center">
+           <h3 className="text-3xl font-black mb-8">Discover more <span className="text-gradient">Experiences.</span></h3>
+           <Link to="/events" className="group flex items-center space-x-4 bg-white/5 px-10 py-5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all">
+              <span className="font-black uppercase tracking-widest text-[10px]">Return to Event Hub</span>
+              <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+           </Link>
         </section>
+
       </main>
 
       <Footer />

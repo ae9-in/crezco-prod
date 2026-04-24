@@ -38,3 +38,9 @@ coverage/
 # Vercel/Deployment
 .vercel
 
+# Misc
+.cache
+.npm
+.eslintcache
+*.tmp
+*.temp
