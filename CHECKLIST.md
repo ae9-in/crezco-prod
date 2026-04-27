@@ -64,13 +64,16 @@
 - [ ] Verify it appears in the grid
 - [ ] Test joining a college
 
-### Step 5: Update Other Pages (Future)
-Update these pages to use Supabase:
-- [ ] CollegeDetail.tsx - Show college posts and events
-- [ ] Login.tsx - Implement authentication
-- [ ] Dashboard.tsx - Show user's colleges and activities
-- [ ] Events.tsx - List and create events
-- [ ] Community.tsx - Community posts and interactions
+### Step 5: Update Other Pages (Completed)
+All pages have been updated to use Supabase and converted to JSX:
+- [x] CollegeDetail.jsx - Show college posts and events
+- [x] Login.jsx - Implement authentication
+- [x] Dashboard.jsx - Show user's colleges and activities
+- [x] Events.jsx - List and create events
+- [x] Community.jsx - Community posts and interactions
+- [x] Gigs.jsx - Marketplace integrated
+- [x] Referrals.jsx - Earnings and rewards
+- [x] Leaderboard.jsx - Active rankings
 
 ## 📁 Files Modified/Created
 
